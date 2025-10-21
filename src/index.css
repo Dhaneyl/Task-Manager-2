@@ -1,0 +1,228 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  /* Coral color palette */
+  --color-coral-50: #fff5f5;
+  --color-coral-100: #ffe3e3;
+  --color-coral-200: #ffc9c9;
+  --color-coral-300: #ffa8a8;
+  --color-coral-400: #ff8787;
+  --color-coral-500: #FF6B6B;
+  --color-coral-600: #fa5252;
+  --color-coral-700: #f03e3e;
+  --color-coral-800: #e03131;
+  --color-coral-900: #c92a2a;
+
+  /* Font family */
+  --font-family-sans: Inter, system-ui, sans-serif;
+}
+
+/* Base styles */
+@layer base {
+  * {
+    @apply transition-colors duration-200;
+  }
+
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 font-sans;
+  }
+
+  html.dark body {
+    @apply bg-gray-900 text-gray-100;
+  }
+
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-gray-900;
+  }
+
+  html.dark h1,
+  html.dark h2,
+  html.dark h3,
+  html.dark h4,
+  html.dark h5,
+  html.dark h6 {
+    @apply text-white;
+  }
+
+  /* Paragraphs */
+  p {
+    @apply text-gray-700;
+  }
+
+  html.dark p {
+    @apply text-gray-300;
+  }
+}
+
+/* Component utilities */
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply bg-coral-500 text-white px-4 py-2 rounded-lg hover:bg-coral-600 transition-colors duration-200 font-medium shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium;
+  }
+
+  html.dark .btn-secondary {
+    @apply bg-gray-800 text-gray-200 border-gray-700 hover:bg-gray-700;
+  }
+
+  .btn-danger {
+    @apply bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200 font-medium shadow-sm;
+  }
+
+  /* Inputs */
+  .input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-coral-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900;
+  }
+
+  html.dark .input {
+    @apply bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white rounded-xl shadow-sm p-6 transition-all duration-200 border border-gray-100;
+  }
+
+  html.dark .card {
+    @apply bg-gray-800 border-gray-700;
+  }
+
+  .card-hover {
+    @apply hover:shadow-md hover:-translate-y-0.5;
+  }
+
+  /* Text utilities that adapt to dark mode */
+  .text-primary {
+    @apply text-gray-900;
+  }
+
+  html.dark .text-primary {
+    @apply text-white;
+  }
+
+  .text-secondary {
+    @apply text-gray-600;
+  }
+
+  html.dark .text-secondary {
+    @apply text-gray-400;
+  }
+
+  .text-muted {
+    @apply text-gray-500;
+  }
+
+  html.dark .text-muted {
+    @apply text-gray-500;
+  }
+
+  /* Background utilities */
+  .bg-primary {
+    @apply bg-white;
+  }
+
+  html.dark .bg-primary {
+    @apply bg-gray-800;
+  }
+
+  .bg-secondary {
+    @apply bg-gray-50;
+  }
+
+  html.dark .bg-secondary {
+    @apply bg-gray-900;
+  }
+
+  /* Border utilities */
+  .border-primary {
+    @apply border-gray-200;
+  }
+
+  html.dark .border-primary {
+    @apply border-gray-700;
+  }
+}
+
+/* Utility classes for dark mode */
+@layer utilities {
+  /* These will be overridden in dark mode */
+  .dark-text-white {
+    @apply text-gray-900;
+  }
+
+  html.dark .dark-text-white {
+    @apply text-white;
+  }
+
+  .dark-text-gray {
+    @apply text-gray-600;
+  }
+
+  html.dark .dark-text-gray {
+    @apply text-gray-400;
+  }
+
+  .dark-bg-white {
+    @apply bg-white;
+  }
+
+  html.dark .dark-bg-white {
+    @apply bg-gray-800;
+  }
+
+  .dark-bg-gray {
+    @apply bg-gray-100;
+  }
+
+  html.dark .dark-bg-gray {
+    @apply bg-gray-800;
+  }
+
+  .dark-border {
+    @apply border-gray-200;
+  }
+
+  html.dark .dark-border {
+    @apply border-gray-700;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  @apply bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  @apply bg-gray-600;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-500;
+}
