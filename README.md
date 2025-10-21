@@ -70,48 +70,111 @@ A comprehensive, full-stack task management application with real-time features,
 
 ## Getting Started
 
-**⚠️ Important:** This application now requires both frontend and backend setup. See [SETUP_GUIDE.md](./SETUP_GUIDE.md) for detailed instructions.
+**⚠️ Important:** This is a full-stack application that requires both frontend and backend servers to be running.
 
 ### Quick Start
 
 #### Prerequisites
 - Node.js 16+ and npm
-- MongoDB (local or MongoDB Atlas account)
+- MongoDB (local installation or MongoDB Atlas account)
 
-#### Installation
+#### Backend Setup
 
-1. Clone or navigate to the project directory:
+1. Navigate to the backend directory:
 ```bash
-cd task-manager
+cd backend
 ```
 
-2. Install dependencies:
+2. Install backend dependencies:
 ```bash
 npm install
 ```
 
-3. Start the development server:
+3. Create a `.env` file in the backend directory:
+```env
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/task-manager
+JWT_SECRET=your_jwt_secret_key_here
+NODE_ENV=development
+```
+
+4. Start the backend server:
+```bash
+npm run dev
+```
+
+The backend will run on `http://localhost:5000`
+
+#### Frontend Setup
+
+1. Navigate to the project root directory:
+```bash
+cd ..
+```
+
+2. Install frontend dependencies:
+```bash
+npm install
+```
+
+3. Start the frontend development server:
 ```bash
 npm run dev
 ```
 
 4. Open your browser and navigate to `http://localhost:5173`
 
-### Demo Credentials
-- **Email**: john.doe@example.com
-- **Password**: Password123
+### Getting Started
+- Register a new account through the registration page
+- Default categories and priorities will be automatically created
+- Start creating and managing your tasks!
 
 ## Project Structure
 
 ```
 task-manager/
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   │   └── database.ts          # MongoDB connection
+│   │   ├── controllers/
+│   │   │   ├── authController.ts    # Authentication logic
+│   │   │   ├── taskController.ts    # Task CRUD operations
+│   │   │   ├── categoryController.ts
+│   │   │   ├── priorityController.ts
+│   │   │   ├── tagController.ts
+│   │   │   ├── notificationController.ts
+│   │   │   └── uploadController.ts
+│   │   ├── middleware/
+│   │   │   ├── auth.ts              # JWT authentication
+│   │   │   └── upload.ts            # File upload handling
+│   │   ├── models/
+│   │   │   ├── User.ts              # User schema
+│   │   │   ├── Task.ts              # Task schema with subtasks
+│   │   │   ├── Category.ts
+│   │   │   ├── Priority.ts
+│   │   │   ├── Tag.ts
+│   │   │   └── Notification.ts
+│   │   ├── routes/
+│   │   │   ├── authRoutes.ts
+│   │   │   ├── taskRoutes.ts
+│   │   │   ├── categoryRoutes.ts
+│   │   │   ├── priorityRoutes.ts
+│   │   │   ├── tagRoutes.ts
+│   │   │   ├── notificationRoutes.ts
+│   │   │   └── uploadRoutes.ts
+│   │   ├── utils/
+│   │   │   ├── seedDefaults.ts      # Default data seeding
+│   │   │   ├── recurrence.ts        # Recurring tasks logic
+│   │   │   └── generateToken.ts     # JWT token generation
+│   │   └── server.ts                # Express server & Socket.io
+│   └── package.json
 ├── src/
 │   ├── components/
 │   │   ├── common/        # Reusable components (Button, Modal)
 │   │   └── layout/        # Layout components (Sidebar, Header, MainLayout)
 │   ├── contexts/          # React Context providers
 │   │   ├── AuthContext.tsx
-│   │   ├── ThemeContext.tsx
 │   │   └── TaskContext.tsx
 │   ├── pages/             # Page components
 │   │   ├── auth/          # Login, Register
@@ -122,12 +185,12 @@ task-manager/
 │   │   ├── notifications/ # Notifications
 │   │   └── account/       # User account settings
 │   ├── services/          # Service layer
-│   │   └── storage.ts     # localStorage operations
+│   │   ├── api.ts         # API client with all endpoints
+│   │   └── socket.ts      # WebSocket service
 │   ├── types/             # TypeScript type definitions
 │   │   └── index.ts
 │   ├── utils/             # Utility functions
-│   │   ├── helpers.ts     # Helper functions
-│   │   └── mockData.ts    # Mock data initialization
+│   │   └── helpers.ts     # Helper functions
 │   ├── App.tsx            # Main App component with routing
 │   ├── main.tsx           # Entry point
 │   └── index.css          # Global styles
@@ -194,7 +257,22 @@ task-manager/
   status: 'pending' | 'in-progress' | 'completed';
   dueDate: string;
   completed: boolean;
-  image?: string;
+  subtasks: Array<{
+    id: string;
+    title: string;
+    completed: boolean;
+  }>;
+  tags: string[];
+  attachments: Array<{
+    fileName: string;
+    fileUrl: string;
+    fileSize: number;
+  }>;
+  recurrence?: {
+    frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
+    interval: number;
+    endDate?: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -224,12 +302,60 @@ task-manager/
 }
 ```
 
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/me` - Get current user
+
+### Tasks
+- `GET /api/tasks` - Get all tasks
+- `POST /api/tasks` - Create task
+- `GET /api/tasks/:id` - Get task by ID
+- `PUT /api/tasks/:id` - Update task
+- `DELETE /api/tasks/:id` - Delete task
+- `PUT /api/tasks/:id/complete` - Toggle completion
+- `POST /api/tasks/:id/subtasks` - Add subtask
+- `PUT /api/tasks/:taskId/subtasks/:subtaskId` - Update subtask
+- `DELETE /api/tasks/:taskId/subtasks/:subtaskId` - Delete subtask
+
+### Categories
+- `GET /api/categories` - Get all categories
+- `POST /api/categories` - Create category
+- `PUT /api/categories/:id` - Update category
+- `DELETE /api/categories/:id` - Delete category
+
+### Priorities
+- `GET /api/priorities` - Get all priorities
+- `POST /api/priorities` - Create priority
+- `PUT /api/priorities/:id` - Update priority
+- `DELETE /api/priorities/:id` - Delete priority
+
+### Tags
+- `GET /api/tags` - Get all tags
+- `POST /api/tags` - Create tag
+- `PUT /api/tags/:id` - Update tag
+- `DELETE /api/tags/:id` - Delete tag
+
+### Notifications
+- `GET /api/notifications` - Get all notifications
+- `PUT /api/notifications/:id/read` - Mark as read
+- `DELETE /api/notifications/:id` - Delete notification
+- `DELETE /api/notifications` - Clear all
+
 ## Available Scripts
 
-- `npm run dev` - Start development server
+### Frontend
+- `npm run dev` - Start Vite development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
+
+### Backend
+- `npm run dev` - Start backend with nodemon
+- `npm run build` - Compile TypeScript
+- `npm start` - Run production server
 
 ## Browser Support
 
@@ -241,20 +367,17 @@ task-manager/
 ## Future Enhancements
 
 Potential features for future versions:
-- Real backend API integration
-- Real-time collaboration
-- File attachments
-- Task comments
-- Advanced filtering
+- Task collaboration and sharing
+- Task comments and discussions
+- Advanced filtering and sorting
 - Export to PDF/CSV
 - Email notifications
-- Mobile app
+- Mobile applications (iOS/Android)
 - Task templates
-- Recurring tasks
-- Sub-tasks
-- Tags system
+- Task dependencies
 - Time tracking
-- Reports and analytics
+- Advanced analytics and reports
+- Calendar integrations (Google Calendar, Outlook)
 
 ## License
 
@@ -262,8 +385,6 @@ This project is open source and available for educational purposes.
 
 ## Author
 
-Created with Claude Code - A comprehensive task management solution.
+**Dhanibel Reyes**
 
----
-
-**Note**: This application uses localStorage for data persistence. Data is stored locally in your browser and is not synced across devices. For production use, consider implementing a backend API with a database.
+A comprehensive full-stack task management solution built with the MERN stack.
